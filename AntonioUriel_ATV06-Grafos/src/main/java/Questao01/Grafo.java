@@ -46,7 +46,8 @@ public class Grafo <T>{
         for (Vertice origem : vertices) {
             res += origem.info + " >>> ";
             virgula = false;
-            for (Aresta destino : origem.adjacentes) {
+            for (Object x : origem.adjacentes){
+                Aresta destino = (Aresta) x;
                 Vertice v = destino.destino;
                 res += ( virgula ? ", ": "") + v.info ;
                 virgula = true;
@@ -57,14 +58,14 @@ public class Grafo <T>{
         }
     }
 
-    class Vertice <T>{ 
+    class Vertice<T> { 
         T info;
         Lista<Aresta> adjacentes;
         Vertice(T info) {
             this.info = info;
             this.adjacentes = new Lista<>();
         }
-        private void adicionarAdjacente(Aresta e) {
+        void adicionarAdjacente(Aresta e) {
             adjacentes.inserir(e);
         }
     }
