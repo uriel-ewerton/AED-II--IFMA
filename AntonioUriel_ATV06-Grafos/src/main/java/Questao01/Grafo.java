@@ -1,27 +1,25 @@
 
 package Questao01;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author Uriel Ewerton
+ * @param <T> Tipo Genérico
  */
-public class Grafo {
-    private final List<Vertice> vertices;
-    private final List<Aresta> arestas;
+public class Grafo <T>{
+    private final Lista<Vertice> vertices;
+    private final Lista<Aresta> arestas;
     private final boolean grafoDirecionado;
     
     public Grafo(boolean direcionadoOuNao) {
-        vertices = new ArrayList<>();
-        arestas = new ArrayList<>();
+        vertices = new Lista<>();
+        arestas = new Lista<>();
         this.grafoDirecionado = direcionadoOuNao;
     }
     
-    public Vertice adicionarVertice(String nome) {
-        Vertice vertice = new Vertice(nome);
-        vertices.add(vertice);
+    public Vertice adicionarVertice(T info) {
+        Vertice vertice = new Vertice(info);
+        vertices.inserir(vertice);
         return vertice;
     }
     
@@ -31,10 +29,14 @@ public class Grafo {
         if(!grafoDirecionado){
             Aresta arestaInversa = new Aresta(destino, origem);
             destino.adicionarAdjacente(arestaInversa);
-            arestas.add(arestaInversa);
+            arestas.inserir(arestaInversa);
         }
-        arestas.add(aresta);
+        arestas.inserir(aresta);
         return aresta;
+    }
+    public boolean removerVertice(String nome){
+        
+        return false;
     }
     
     @Override
@@ -42,11 +44,11 @@ public class Grafo {
         String res = "";
         boolean virgula;
         for (Vertice origem : vertices) {
-            res += origem.nome + " >>> ";
+            res += origem.info + " >>> ";
             virgula = false;
             for (Aresta destino : origem.adjacentes) {
                 Vertice v = destino.destino;
-                res += ( virgula ? ", ": "") + v.nome ;
+                res += ( virgula ? ", ": "") + v.info ;
                 virgula = true;
             }
             res += "\n";
@@ -55,15 +57,15 @@ public class Grafo {
         }
     }
 
-    class Vertice { 
-        String nome;
-        List<Aresta> adjacentes;
-        Vertice(String nome) {
-            this.nome = nome;
-            this.adjacentes = new ArrayList<>();
+    class Vertice <T>{ 
+        T info;
+        Lista<Aresta> adjacentes;
+        Vertice(T info) {
+            this.info = info;
+            this.adjacentes = new Lista<>();
         }
-        void adicionarAdjacente(Aresta e) {
-            adjacentes.add(e);
+        private void adicionarAdjacente(Aresta e) {
+            adjacentes.inserir(e);
         }
     }
     

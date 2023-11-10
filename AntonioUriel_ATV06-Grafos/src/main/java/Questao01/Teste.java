@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Project/Maven2/JavaApp/src/main/java/${packagePath}/${mainClassName}.java to edit this template
- */
 
 package Questao01;
 
@@ -12,6 +8,16 @@ package Questao01;
 public class Teste {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Grafo grafo = new Grafo(true);
+        Vertice a = grafo.adicionarVertice("A");
+        Vertice b = grafo.adicionarVertice("B");
+        Vertice c = grafo.adicionarVertice("C");
+        Vertice d = grafo.adicionarVertice("D");
+        Aresta ab = grafo.adicionarAresta(a, b);
+        Aresta bc = grafo.adicionarAresta(b, c);
+        Aresta bd = grafo.adicionarAresta(b, d);
+        Aresta cd = grafo.adicionarAresta(c, d);
+        Aresta dd = grafo.adicionarAresta(d, d);
+        System.out.println(grafo);
     }
 }
