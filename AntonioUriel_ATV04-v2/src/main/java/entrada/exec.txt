@@ -1,0 +1,12 @@
+inserir; 12375545; João Silva; joaosilva@email.com; São Paulo
+inserir; 67893802; Maria Santos; mariasantos@email.com; Rio de Janeiro
+inserir; 23457336; Pedro Costa; pedrocosta@email.com; Salvador
+inserir; 75828901; Ana Pereira; anapereira@email.com; Brasília
+inserir; 34856745; Luiz Oliveira; luizoliveira@email.com; Fortaleza
+buscar; 12375545; João Silva; joaosilva@email.com; São Paulo
+remover; 12375545;
+buscar;  12375545;
+inserir; 12345992; João Silva; joaosilva@email.com; São Paulo
+buscar;  12345992;
+buscar;  23457336; Pedro Costa; pedrocosta@email.com; Salvador
+Imprimir;

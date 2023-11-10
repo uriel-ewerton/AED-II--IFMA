@@ -1,0 +1,22 @@
+Realmente o tempo é nosso inimigo
+
+Esboço da resolução:
+Preparação:
+Ler arquivo e guardar coordenadas fazendo casting para double;
+(Provavelmente é mais interessante usar uma classe Ponto e fazer um array dessa classe)
+Classe de mergesort para organizar os pontos levando em consideração o eixo x;
+
+1. Dividir o grupo de pontos em dois subgrupos de mesmo tamanho por uma linha vertical 
+(seria uma variável representando o ponto médio)
+2. Resolver o problema recursivamente para os dois grupos, resultando nas distâncias mínimas nos lados esquerdos e direitos, dEmin e dDmin  respectivamente.
+3. Encontrar a distância mínima  dEDmin entre um par de pontos onde cada ponto está em um lado diferente da linha vertical.
+4. A resposta final é o mínimo entre dEmin, dDmin e dEDmin.
+
+Logica retirada daqui: https://pt.wikipedia.org/wiki/Problema_do_par_de_pontos_mais_pr%C3%B3ximo 
+(tem fontes boas)
+E corroborada por "Análise de Algoritmos" adaptações de slides
+do Prof. Paulo Feofiloff e do Prof. José Coelho de Pina. (USP);
+https://www.ime.usp.br/~cris/aulas/12_1_6711/slides/aula2.pdf
+
+
+Registrando tudo aqui para lembrar de resolver essa questão.

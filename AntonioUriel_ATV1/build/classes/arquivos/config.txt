@@ -1,0 +1,74 @@
+--- Estrutura do projeto e uso:
+
+    Esse projeto possui 4 classes de estruturas de dados construídas visando maior facilidade de uso com comandos simples a partir de arquivo txt (exec.txt). 
+Esse objetivo foi alcançado por meio da implementação de uma interface (\util\EstruturasDeDados.java) que estabelece os métodos comuns a todas as TADS. O lado
+negativo é que métodos específicos geral um pouco de texto "inútil" ao fim do código.
+
+-- Uso:
+
+    Deve-se digitar inicialmente o tipo de estrutura que será utilizada no arquivo "exec.txt", presente no pacote "arquivos". 
+    Existem 4 estruturas: 
+"lista" "fila" "pilha" "arvore"     (digite conforme descrito).
+    Para escolher os comandos digite o nome do comando em caixa alta e o objeto a ser utilizado pelo método, se houver, separados
+por ";", um em cada linha, após o nome da estrutura.
+    Existem 4 comandos (comando extra usado em teste "getTamanho"):
+INSERIR;nomedoobjeto
+REMOVER;nomedoobjeto
+REMOVER                
+BUSCAR;nomedoobjeto
+IMPRIMIR
+
+Exemplo:
+    lista OU pilha OU fila OU arvore
+    REMOVER; bola
+    IMPRIMIR
+    INSERIR; casa
+    IMPRIMIR;
+    BUSCAR; colher
+
+    O programa lê e adiciona dados automaticamente após a primeira linha do exec.txt apartir de arquivos contidos no pacote "arquivos".
+Por padrão o arquivo lido é "entradaString.txt" (para uso de palavras) e pode ser alterado na linha 20 da classe Run.java (em atv01).
+Os dados nos arquivos de entrada podem ser alterados, desde que sigam a mesma lógica do arquivo exec, cada item em uma linha.
+PS: Devido à natureza das estruturas de dados, inserir e remover funcionam de formas diferentes em cada tad.
+
+Funcionamento específico de cada tad:
+- Lista (duplamente encadeada)
+    Possui classe NoDuplo com dois campos, "anterior" e "próximo";
+    Inserir: 
+        Adiciona elemento ao final da lista;
+    Remover:
+        Remove o elemento passado por parâmetro em qualquer posição da lista;
+
+- Fila 
+    Possui classe NoSimples com um campo "próximo";
+    Inserir: 
+        Adiciona elementoao final da fila;
+    Remover:
+        Remove o elemento no inicio da fila;
+
+- Pilha 
+    Possui classe NoSimples com um campo "próximo";
+    Inserir: 
+        Adiciona elemento ao topo da pilha;
+    Remover:
+        Remove o elemento no topo da pilha;
+
+- Arvore Binaria 
+    Possui classe NoArvore com dois campos, "esquerda" e "direita";
+    Inserir: 
+        Adiciona elemento passando por um filtro de maior ou igual à direita e menor à 
+esquerda, simulando uma árvore binária de busca. (existe método na tad para adicionar 
+em algum local específico, só não foi implementado o funcionamento com a lógica dos 
+comandos simples;
+    Remover:
+        Remove o elemento passado por parâmetro em qualquer nó da arvore, exceto a raiz;
+
+Os comandos Buscar e Imprimir funcionam de forma semelhante nas 4 estruturas:
+Buscar: 
+    Retorna null ou o proprio elemento passado por parâmetro usando .toString(), 
+caso seja encontrado;
+
+Imprimir:
+    Imprime todos os elementos presentes na estrutura (a ordem varia de acordo com 
+as características de cada estrutura).
+    

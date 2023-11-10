@@ -1,0 +1,310 @@
+Autor desta implementação: Antonio Uriel Ewerton do Vale
+
+Árvore Splay é uma árvore binária(ver item *), onde a cada acesso o nó em questão
+é movido para a raiz. Isso é feito por meio de rotações, semelhantes às da árvore
+AVL. A lógica é que todos os nós que são acessados com mais frequencia ficam mais 
+próximos da raiz e, consequentemente, tem suas operações executadas com mais rapidez.
+
+As operações são executadas em tempo O(log2 n), são elas:
+- acessar (T info);
+- inserir (T info);
+- remover (T info);
+
+* Cada novo nó é adicionado após um percurso por um galho, até a folha desse 
+galho, sempre tomando a direção, após ser comparado com o nó atualmente visitado,
+esquerda caso seja menor ou direita caso seja maior ou igual.
+
+O funcionamento das rotações, alem da implementação, requer atenção especial.
+Lembre-se de que as varreduras estão "em ordem", ou seja, esquerda-raíz-direita.
+Existem três situações gerais para lidar e cada uma recebe um nome:
+    1) Zig:
+        - Nó acessado não tem avô.
+        - Solução: rotação simples.
+        - Exemplo: 
+                    Y    X                  Y           X       
+                   /      \                  \         /
+                  X        Y                  X       Y 
+               inicio   rotação            inicio  rotação
+                          à                           à
+                        direita                    esquerda
+                        
+        No primeiro caso, Y foi inserido (sem necessidade de rotação), depois X
+        foi inserido e foi menor que Y. Após a inserção o X teria que ser levado
+        à raiz e isso só custou uma rotação. O segundo caso segue a mesma lógica,
+        mas o X > Y.
+
+        -> Repare que a rotação mantém as regras de árvore binária em relação ao
+        posicionamento de maior e menor.
+
+        Considerando agora uma situação mais completa, podemos imaginar que, no
+        primeiro caso, X tem duas subárvores quaisquer T1 e T2 e Y tem uma subárvore
+        qualquer T3:
+
+            Y       Acessando X       X
+           / \      teremos:         / \
+          X   T3                    T1  Y 
+         / \                           / \    
+        T1  T2                        T2  T3  
+        
+        -> Novamente, se você fizer a rotação simples de X-Y, como anteriormente
+        e colocar as subárvores como numa árvore binária comum, todos os posicio-
+        namentos continuam corretos em relação a maior e menor.
+
+    2) Zig-Zig:
+        - Nó acessado tem avô.
+        - Nó acessado tem mesma relação com o nó pai Y que o nó Y tem com o 
+        seu pai Z (Avô de X).
+        - Exemplo:
+        Y = Filho direito de Z
+        X = FIlho direito de Y
+               Z              X             OBS: Mesma lógica para rotação
+                \            /              à direita. Nesse caso existem 4 
+                 Y          Y               subárvores potenciais, nos espaços
+                  \        /                "vazios". O exemplo no Zig se aplica
+                   X      Z                 da mesma forma.
+               inicio   rotação
+                           à
+                        esquerda
+    
+    3) Zig-Zag:
+        - Nó acessado tem avô.
+        - Nó acessado tem relação diferente com o nó pai Y que o nó Y tem com o 
+        seu pai Z (Avô de X).
+        - Exemplo:
+        Y = Filho direito de Z
+        X = FIlho esquerdo de Y
+               Z              X             OBS: Mesma lógica para rotação
+                \            / \            inversa (Y do outro lado). Nesse 
+                 Y          Z   Y           caso também existem 4 subárvores 
+                /                           potenciais, nos espaços "vazios". 
+               X                            O exemplo no Zig se aplicada mesma
+             inicio         final           forma. 
+        Aqui, uma lógica interessante para enterder é reorganizar esses três nós
+        mantendo o "em ordem" da seguinte forma:
+        A|B|C
+        Z|X|Y
+        A-> menor valor
+        C-> maior valor
+                        
+A classe No<T> utiliza um tipo T genérico e da suporte à arvore splay. Contém:     
+    T info: Campo para chave ou potencialmente elementos mais complexos. 
+    No<T> filhoEsq;
+    No<T> filhoDir;
+    No<T> pai;
+
+A classe principal ArvoreSplay, tambpem utiliza generics e possui campo raiz:
+    No<T> raiz;
+
+Todas os métodos desta implementação serão detalhadas a seguir.
+
+|||Método rotacaoEsq(x)|||
+Entrada: Um nó x
+    Defina y como filho direito de x
+    Defina o filho direito de x como o filho esquerdo de y
+    Se o filho esquerdo de y não for nulo, 
+        defina o pai do filho esquerdo de y como x
+    Defina o pai de y como o pai de x
+    Se o pai de x for nulo, 
+        defina a raiz como y
+    Senão, se x for igual ao filho esquerdo do seu pai, 
+        defina o filho esquerdo do pai de x como y
+    Senão, 
+        defina o filho direito do pai de x como y
+    Defina o filho esquerdo de y como x
+    Defina o pai de x como y
+Fim do Método
+
+Este método realiza uma rotação à esquerda em um nó específico (x). 
+Ele é usado para reequilibrar a árvore após operações.
+--------------------------------------------------------------------------------
+|||Método rotacaoDir(x)|||
+    Defina y como filho esquerdo de x
+    Defina o filho esquerdo de x como o filho direito de y
+    Se o filho direito de y não for nulo, 
+        defina o pai do filho direito de y como x
+    Defina o pai de y como o pai de x
+    Se o pai de x for nulo, 
+        defina a raiz como y
+    Senão, se x for igual ao filho esquerdo do seu pai, 
+        defina o filho esquerdo do pai de x como y
+    Senão, 
+        defina o filho direito do pai de x como y
+    Defina o filho direito de y como x
+    Defina o pai de x como y
+Fim do Método
+
+Este método realiza uma rotação à direita em um nó específico (x). 
+Ele também é usado para reequilibrar a árvore após operações.
+--------------------------------------------------------------------------------
+|||Método splay(x)|||
+    Enquanto o pai de x não for nulo,
+        Se o avô de x for nulo,
+            Se x for igual ao filho esquerdo do seu pai, 
+                chame rotacaoDir no pai de x.
+            Senão, 
+                chame rotacaoEsq no pai de x.
+        Senão se x e seu pai forem filhos esquerdos,
+            Chame rotacaoDir no avô de x.
+            Chame rotacaoDir no novo avô de x (anteriormente era seu pai).
+        Senão se x e seu pai forem filhos direitos,
+            Chame rotacaoEsq no avô de x.
+            Chame rotacaoEsq no novo avô de x (anteriormente era seu pai).
+        Senão se x for um filho direito e seu pai um filho esquerdo,
+            Chame rotacaoEsq no pai de x.
+            Chame rotacaoDir no novo pai de x (anteriormente era seu avô).
+        Senão,
+            Chame rotacaoDir no pai de x.
+            Chame rotacaoEsq no novo pai de x (anteriormente era seu avô).
+Fim do Método
+
+Este método move um nó específico (x) para a raiz da árvore usando uma sequência
+apropriada das operações rotacaoEsq e rotacaoDir.
+--------------------------------------------------------------------------------
+|||Método inserir(info)|||
+    Crie um novoNo com info.
+    Se a raiz for nula, 
+        defina a raiz como novoNo e retorne.
+    Defina atual como raiz e pai como nulo.
+    Enquanto atual não for nulo,
+        Defina pai como atual.
+        Se info for menor que a informação em atual,
+            Defina atual como seu filho esquerdo.
+        Senão se info for maior que a informação em atual,
+            Defina atual como seu filho direito.
+        Senão,
+            Retorne (não permite chaves repetidas).
+            // Para permitir, basta alterar o ">= 0" no else if acima
+            // obs: não devidamente testado kkkk
+    Se info for menor que a informação em pai,
+        Defina novoNo como filho esquerdo do pai.
+    Senão,
+        Defina novoNo como filho direito do pai.
+    Defina o pai do novoNo como pai.
+    Chame splay em novoNo (leva novoNo para a raiz).
+Fim do Método
+
+Este método insere um novo nó com uma determinada informação (info) na árvore. 
+Se a informação já existir na árvore, a inserção não é realizada 
+(não são permitidas chaves duplicadas). Após a inserção, o método splay é 
+chamado no novo nó para trazê-lo para a raiz da árvore.
+--------------------------------------------------------------------------------
+|||Método acessar(info)|||
+    Defina noAux como o resultado da busca por info.
+    Se noAux não for nulo,
+        Chame splay em noAux.
+        Retorne info.
+    Senão, 
+        retorne nulo.
+Fim do Método
+
+Este método realiza uma operação de acesso na árvore splay. Ele busca um nó com 
+uma determinada informação (info) e, se encontrado, move esse nó para a raiz da
+árvore usando a operação splay. Retorna também a chave buscada.
+--------------------------------------------------------------------------------
+|||Método deletar(info)|||
+    Defina noAux como o resultado da busca por info.
+    Se noAux for nulo, 
+        retorne (a chave não foi encontrada na árvore).
+    Chame splay em noAux.
+    Se o filho esquerdo de noAux for nulo,
+        Defina a raiz como o filho direito de noAux.
+        Se a raiz não for nula, 
+            defina o pai da raiz como nulo.
+    Senão,
+        Defina ultimaEsquerda como o resultado de noMaisAlto no filho esquerdo de noAux.
+        Chame splay em ultimaEsquerda.
+        Defina o filho direito de ultimaEsquerda como o filho direito de noAux.
+        Se o filho direito de noAux não for nulo, 
+            defina o pai do filho direito de noAux como ultimaEsquerda.
+        Defina a raiz como ultimaEsquerda e defina o pai da raiz como nulo.
+Fim do Método
+
+Este método realiza uma operação de exclusão na árvore splay. Ele busca um nó
+com uma determinada informação (info) e, se encontrado, remove esse nó da árvore. 
+Após a exclusão, a árvore é reequilibrada usando a operação splay.
+Uma explicação mais detalhada está no final desse arquivo.
+--------------------------------------------------------------------------------
+|||Método buscar(info)|||
+    Defina atual como raiz.
+    Enquanto atual não for nulo,
+        Se info for menor que a informação em atual,
+            Defina atual como seu filho esquerdo.
+        Senão se info for maior que a informação em atual,
+            Defina atual como seu filho direito.
+        Senão,
+            Retorne atual (chave encontrada).
+  Retorne nulo (chave não encontrada).
+Fim do Método
+
+Este método realiza uma operação de busca na árvore splay. Ele retorna um nó 
+com uma determinada informação (info), se existir na árvore.
+--------------------------------------------------------------------------------
+|||Método noMaisAlto(noAux)|||
+    Enquanto o filho direito de noAux não for nulo,
+        Defina noAux como seu filho direito.
+    Retorne noAux.
+Fim do Método
+
+Este método retorna o nó com a maior chave em uma subárvore enraizada em um dado
+nó (noAux).
+--------------------------------------------------------------------------------
+|||Método imprimir()|||
+  Chame inOrder na raiz.
+Fim do Método
+
+Este método imprime as chaves dos nós da árvore em ordem crescente.
+Serve majoritariamente para facilitar uma eventual troca do inorder por outra 
+varredura.
+--------------------------------------------------------------------------------
+|||Método inOrder(noAux)|||
+    Se noAux não for nulo,
+        Chame inOrder no filho esquerdo de noAux.
+        Imprima a informação em noAux.
+        Chame inOrder no filho direito de noAux.
+Fim do Método
+
+Este método realiza um percurso em ordem na árvore ou subárvore enraizada em um
+dado nó (noAux). Ele visita primeiro o filho esquerdo do nó, depois o próprio
+nó e finalmente o filho direito do nó. Isso resulta na impressão das chaves dos
+nós em ordem crescente.
+--------------------------------------------------------------------------------
+***** Explicação detalhada da segunda metade do método de exclusão:
+Esta parte do código é executada quando o nó a ser eliminado (nó) tem um filho 
+esquerdo não nulo. O objetivo é encontrar o nó máximo (ultimaEsquerda) na subárvore
+esquerda do nó a ser eliminado. A razão para escolher o nó máximo na subárvore
+esquerda está relacionada com a manutenção da propriedade da árvore de pesquisa
+binária (BST).
+
+Em uma árvore de pesquisa binária:
+    Todos os nós na subárvore esquerda de um nó têm chaves menores que a chave 
+    do nó.
+    Todos os nós na subárvore direita de um nó têm chaves maiores r do que a 
+    chave do nó.
+
+Ao excluir um nó com dois filhos, é uma prática comum substituir o nó a ser
+excluído pelo seu predecessor ou sucessor na ordem. Neste caso, está a ser 
+utilizado o predecessor na ordem, que é o nó máximo na subárvore esquerda.
+
+Agora, vamos seguir os passos:
+1. Encontrar o nó máximo na subárvore esquerda (ultimaEsquerda):
+    noMaisAlto é um método auxiliar que percorre os filhos direitos dos nós até 
+    atingir o nó mais à direita, que é o nó máximo.
+2. Splay o nó máximo para a raiz:
+    A operação de splay é executada em maxLeft para trazê-lo para a raiz. 
+    Isto garante que o nó máximo é agora a raiz da subárvore.
+3. Ajustar os ponteiros:
+    - ultimaEsquerda.setFilhoDir(noAux.getFilhoDir());: 
+        A subárvore direita de ultimaEsquerda é definida como a subárvore direita do 
+        nó a ser excluído.
+    - noAux.getFilhoDir().setPai(ultimaEsquerda);: 
+        Se a subárvore direita do nó a ser eliminado não for nula, atualiza seu 
+        ponteiro pai para ultimaEsquerda.
+    - raiz = ultimaEsquerda;: 
+        Define ultimaEsquerda como a nova raiz da subárvore.
+    - ultimaEsquerda.setPai(null);: 
+        Como ultimaEsquerda é agora a raiz, seu pai deve ser null.
+Ao usar o nó máximo na subárvore esquerda, você garante que a propriedade BST 
+seja mantida, pois todos os nós na subárvore esquerda de ultimaEsquerda têm chaves
+menores que a chave de ultimaEsquerda. Esta abordagem é uma estratégia comum quando se 
+lida com a eliminação de nós numa árvore de pesquisa binária.
+
