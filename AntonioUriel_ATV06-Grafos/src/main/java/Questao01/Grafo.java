@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package Questao01;
 
 import java.util.ArrayList;
@@ -9,15 +6,17 @@ import java.util.List;
 
 /**
  *
- * @author 20221SI0027
+ * @author Uriel Ewerton
  */
 public class Grafo {
-    List<Vertice> vertices;
-    List<Aresta> arestas;
+    private final List<Vertice> vertices;
+    private final List<Aresta> arestas;
+    private final boolean grafoDirecionado;
     
-    public Grafo() {
+    public Grafo(boolean direcionadoOuNao) {
         vertices = new ArrayList<>();
         arestas = new ArrayList<>();
+        this.grafoDirecionado = direcionadoOuNao;
     }
     
     public Vertice adicionarVertice(String nome) {
@@ -29,6 +28,11 @@ public class Grafo {
     public Aresta adicionarAresta(Vertice origem, Vertice destino) {
         Aresta aresta = new Aresta(origem, destino);
         origem.adicionarAdjacente(aresta);
+        if(!grafoDirecionado){
+            Aresta arestaInversa = new Aresta(destino, origem);
+            destino.adicionarAdjacente(arestaInversa);
+            arestas.add(arestaInversa);
+        }
         arestas.add(aresta);
         return aresta;
     }
