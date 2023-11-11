@@ -1,6 +1,8 @@
 
 package Questao01;
 
+import java.util.Objects;
+
 /**
  *
  * @author Uriel Ewerton
@@ -26,27 +28,118 @@ public class Grafo <T>{
     
     public Vertice adicionarVertice(T info) {
         Vertice vertice = new Vertice(info);
-        vertices.inserir(vertice);
-        return vertice;
+        if(vertices.buscarInterno(vertice) == null){
+            vertices.inserir(vertice);
+            return vertice;
+        }else
+            return null;
     }
     
     public Aresta adicionarAresta(Vertice origem, Vertice destino) {
+        //evita que se insira arestas não ponderadas em grafos ponderados
         if(!grafoPonderado){
             Aresta aresta = new Aresta(origem, destino);
-            origem.adicionarAdjacente(aresta);
-            if(!grafoDirecionado){
+            if(arestas.buscarInterno(aresta) == null){
+                //caso não direcionado, adiciona aresta e sua duplicata inversa
+                if(!grafoDirecionado){
+                    Aresta arestaInversa = new Aresta(destino, origem);
+                    destino.adicionarAdjacente(arestaInversa);
+                    arestas.inserir(arestaInversa);
+                    origem.adicionarAdjacente(aresta);
+                    arestas.inserir(aresta);
+                    return aresta;
+                }
                 Aresta arestaInversa = new Aresta(destino, origem);
-                destino.adicionarAdjacente(arestaInversa);
-                arestas.inserir(arestaInversa);
+                //caso direcionado, adiciona aresta, se não houver inversa
+                if(arestas.buscarInterno(arestaInversa) == null){
+                    origem.adicionarAdjacente(aresta);
+                    arestas.inserir(aresta);
+                    return aresta;
+                }
+                System.out.println("Aresta já existe no caminho inverso: " 
+                        + origem.info + " " + destino.info);
+                return null;
             }
-            arestas.inserir(aresta);
-            return aresta;
+            System.out.println("Aresta já existe: " + origem.info + " " + destino.info);
+            return null;
         }
         return null;
     }
-    public boolean removerVertice(T info){
-        
-        return false;
+    public Aresta adicionarAresta(Vertice origem, Vertice destino, int peso) {
+        //evita que se insira arestas ponderadas em grafos não ponderados
+        if(grafoPonderado){
+            Aresta aresta = new Aresta(origem, destino,peso);
+            if(arestas.buscarInterno(aresta) == null){
+            //caso não direcionado, adiciona aresta e sua duplicata inversa
+                if(!grafoDirecionado){
+                    Aresta arestaInversa = new Aresta(destino, origem, peso);
+                    destino.adicionarAdjacente(arestaInversa);
+                    arestas.inserir(arestaInversa);
+                    origem.adicionarAdjacente(aresta);
+                    arestas.inserir(aresta);
+                    return aresta;
+                }
+                Aresta arestaInversa = new Aresta(destino, origem, peso);
+                //caso direcionado, adiciona aresta, se não houver inversa
+                if(arestas.buscarInterno(arestaInversa) == null){
+                    origem.adicionarAdjacente(aresta);
+                    arestas.inserir(aresta);
+                    return aresta;
+                }
+                System.out.println("Aresta já existe: " + origem.info + " " + destino.info);
+                return null;
+            }
+            System.out.println("Aresta já existe: " + origem.info + " " + destino.info);
+            return null;
+        }
+        return null;
+    }
+    /**
+     * Remove um vértice com "nome" contido em info e limpa as arestas que 
+     * se ligavam a esse vértice.
+     * @param info identificador genérico do vértice.
+     */
+    public void removerVertice(T info){
+        Vertice aux = new Vertice(info);
+        vertices.remover(aux);
+        removerAresta(info);
+    }
+    /**
+     * Remove aresta que incluam vértice com o parametro info.
+     * Serve para limpar arestas ao excluir um vértice.
+     * @param info identificador genérico do vértice.
+     */
+    public void removerAresta(T info){
+        for(Aresta xy : arestas){
+            if(xy.origem.info.equals(info) || xy.destino.info.equals(info)){
+                arestas.remover(xy);
+                xy.origem.adjacentes.remover(xy);
+                xy.destino.adjacentes.remover(xy);
+            }
+        }
+    }
+    /**
+     * Remove aresta que inclui dois vertices, passados por info1 e info2.
+     * 
+     * Serve para limpar arestas específicas.
+     * 
+     * @param info1 identificador genérico do primeiro vértice.
+     * @param info2 identificador genérico do segundo vértice.
+     */
+    public void removerAresta(T info1, T info2){
+        for(Aresta xy : arestas){
+            if(xy.origem.info.equals(info1) && xy.destino.info.equals(info2)){
+                arestas.remover(xy);
+                xy.origem.adjacentes.remover(xy);
+                xy.destino.adjacentes.remover(xy);
+            }else if(!grafoDirecionado){  
+                if(xy.origem.info.equals(info2) && xy.destino.info.equals(info1)){
+                    arestas.remover(xy);
+                    xy.origem.adjacentes.remover(xy);
+                    xy.destino.adjacentes.remover(xy);
+                }
+            }
+        }
     }
     
     @Override
@@ -78,6 +171,22 @@ public class Grafo <T>{
         void adicionarAdjacente(Aresta e) {
             adjacentes.inserir(e);
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Vertice<?> other = (Vertice<?>) obj;
+            return Objects.equals(this.info, other.info);
+        }
+        
     }
     
     class Aresta {
@@ -95,7 +204,28 @@ public class Grafo <T>{
             this.destino = destino;
             this.peso = peso;
         }
-        
+
+   
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Aresta other = (Aresta) obj;
+            if (this.peso != other.peso) {
+                return false;
+            }
+            if (!Objects.equals(this.origem, other.origem)) {
+                return false;
+            }
+            return Objects.equals(this.destino, other.destino);
+        }
     }
 
     

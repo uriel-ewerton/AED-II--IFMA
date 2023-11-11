@@ -14,10 +14,14 @@ public class Teste {
         Vertice c = grafo.adicionarVertice("C");
         Vertice d = grafo.adicionarVertice("D");
         Aresta ab = grafo.adicionarAresta(a, b);
+        Aresta ba = grafo.adicionarAresta(b, a);
         Aresta bc = grafo.adicionarAresta(b, c);
         Aresta bd = grafo.adicionarAresta(b, d);
         Aresta cd = grafo.adicionarAresta(c, d);
         Aresta dd = grafo.adicionarAresta(d, d);
+        Aresta ddd = grafo.adicionarAresta(d, d);
+        System.out.println(grafo);
+        //grafo.removerVertice("A");
         System.out.println(grafo);
     }
 }
