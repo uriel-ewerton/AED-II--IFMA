@@ -8,7 +8,7 @@ package Questao01;
 public class Teste {
 
     public static void main(String[] args) {
-        Grafo grafo = new Grafo(true);
+        Grafo grafo = new Grafo(true,false);
         Vertice a = grafo.adicionarVertice("A");
         Vertice b = grafo.adicionarVertice("B");
         Vertice c = grafo.adicionarVertice("C");

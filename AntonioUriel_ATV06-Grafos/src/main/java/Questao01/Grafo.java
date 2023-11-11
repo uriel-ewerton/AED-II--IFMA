@@ -7,14 +7,21 @@ package Questao01;
  * @param <T> Tipo Genérico
  */
 public class Grafo <T>{
+    /**
+     * grafoDirecionado e grafoPonderado são booleanos que regulam o tipo de 
+     * grafo que será montado. Verdadeiro para a ativação da característica.
+     *
+     */
     private final Lista<Vertice> vertices;
     private final Lista<Aresta> arestas;
     private final boolean grafoDirecionado;
+    private final boolean grafoPonderado;
     
-    public Grafo(boolean direcionadoOuNao) {
+    public Grafo(boolean direcionadoOuNao, boolean ponderadoOuNao) {
         vertices = new Lista<>();
         arestas = new Lista<>();
         this.grafoDirecionado = direcionadoOuNao;
+        this.grafoPonderado = ponderadoOuNao;
     }
     
     public Vertice adicionarVertice(T info) {
@@ -24,17 +31,20 @@ public class Grafo <T>{
     }
     
     public Aresta adicionarAresta(Vertice origem, Vertice destino) {
-        Aresta aresta = new Aresta(origem, destino);
-        origem.adicionarAdjacente(aresta);
-        if(!grafoDirecionado){
-            Aresta arestaInversa = new Aresta(destino, origem);
-            destino.adicionarAdjacente(arestaInversa);
-            arestas.inserir(arestaInversa);
+        if(!grafoPonderado){
+            Aresta aresta = new Aresta(origem, destino);
+            origem.adicionarAdjacente(aresta);
+            if(!grafoDirecionado){
+                Aresta arestaInversa = new Aresta(destino, origem);
+                destino.adicionarAdjacente(arestaInversa);
+                arestas.inserir(arestaInversa);
+            }
+            arestas.inserir(aresta);
+            return aresta;
         }
-        arestas.inserir(aresta);
-        return aresta;
+        return null;
     }
-    public boolean removerVertice(String nome){
+    public boolean removerVertice(T info){
         
         return false;
     }
@@ -73,10 +83,19 @@ public class Grafo <T>{
     class Aresta {
         Vertice origem;
         Vertice destino;
+        int peso;
+        
         Aresta(Vertice origem, Vertice destino){
             this.origem = origem;
             this.destino = destino;
         }
+
+        Aresta(Vertice origem, Vertice destino, int peso) {
+            this.origem = origem;
+            this.destino = destino;
+            this.peso = peso;
+        }
+        
     }
 
     
