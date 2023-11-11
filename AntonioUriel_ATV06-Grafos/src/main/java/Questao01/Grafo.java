@@ -42,9 +42,11 @@ public class Grafo <T>{
             if(arestas.buscarInterno(aresta) == null){
                 //caso não direcionado, adiciona aresta e sua duplicata inversa
                 if(!grafoDirecionado){
-                    Aresta arestaInversa = new Aresta(destino, origem);
-                    destino.adicionarAdjacente(arestaInversa);
-                    arestas.inserir(arestaInversa);
+                    if(!origem.equals(destino)){
+                        Aresta arestaInversa = new Aresta(destino, origem);
+                        destino.adicionarAdjacente(arestaInversa);
+                        arestas.inserir(arestaInversa);
+                    }
                     origem.adicionarAdjacente(aresta);
                     arestas.inserir(aresta);
                     return aresta;
@@ -72,9 +74,11 @@ public class Grafo <T>{
             if(arestas.buscarInterno(aresta) == null){
             //caso não direcionado, adiciona aresta e sua duplicata inversa
                 if(!grafoDirecionado){
-                    Aresta arestaInversa = new Aresta(destino, origem, peso);
-                    destino.adicionarAdjacente(arestaInversa);
-                    arestas.inserir(arestaInversa);
+                    if(!origem.equals(destino)){
+                        Aresta arestaInversa = new Aresta(destino, origem, peso);
+                        destino.adicionarAdjacente(arestaInversa);
+                        arestas.inserir(arestaInversa);
+                    }
                     origem.adicionarAdjacente(aresta);
                     arestas.inserir(aresta);
                     return aresta;
@@ -160,7 +164,9 @@ public class Grafo <T>{
         }
         return null;
     }
-    
+    public Lista<Aresta> obterAdjascentes(Vertice v){
+        return v.adjacentes;
+    }
     public void imprimir() {
         String res = "";
         boolean virgula;

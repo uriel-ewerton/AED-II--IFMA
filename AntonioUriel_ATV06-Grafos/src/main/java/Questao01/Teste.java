@@ -8,7 +8,7 @@ package Questao01;
 public class Teste {
 
     public static void main(String[] args) {
-        Grafo grafo = new Grafo(true,true);
+        Grafo grafo = new Grafo(false,true);
         Vertice a = grafo.adicionarVertice("A");
         Vertice b = grafo.adicionarVertice("B");
         Vertice c = grafo.adicionarVertice("C");
@@ -20,10 +20,13 @@ public class Teste {
         Aresta cd = grafo.adicionarAresta(c, d,0);
         Aresta dd = grafo.adicionarAresta(d, d,0);
         Aresta ddd = grafo.adicionarAresta(d, d,0);
-        Vertice f = null;
-        Aresta g = null;
-        System.out.println(grafo.pesquisarAresta(g));
+        //Vertice f = null;
+        //Aresta g = null;
         //grafo.removerVertice("A");
+        System.out.println("Adjascentes de D:");
+        grafo.obterAdjascentes(d).imprimir();
+       
+        System.out.println();
         grafo.imprimir();
     }
 }
