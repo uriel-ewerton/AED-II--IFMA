@@ -141,9 +141,27 @@ public class Grafo <T>{
             }
         }
     }
+    public String pesquisarVertice(Vertice v){
+        if(vertices.buscarInterno(v) != null){
+            return v.toString();
+        }
+        return null;
+    }
+    public String pesquisarAresta(Vertice x, Vertice y){
+        Aresta buscada = new Aresta(x,y);
+        if(arestas.buscarInterno(buscada) != null){
+            return buscada.toString();
+        }
+        return null;
+    }
+    public String pesquisarAresta(Aresta xy){
+        if(arestas.buscarInterno(xy) != null){
+            return xy.toString();
+        }
+        return null;
+    }
     
-    @Override
-    public String toString() {
+    public void imprimir() {
         String res = "";
         boolean virgula;
         for (Vertice origem : vertices) {
@@ -157,7 +175,7 @@ public class Grafo <T>{
             }
             res += "\n";
         }
-        return res;
+        System.out.print(res);
         }
     }
 
@@ -186,8 +204,14 @@ public class Grafo <T>{
             final Vertice<?> other = (Vertice<?>) obj;
             return Objects.equals(this.info, other.info);
         }
+
+        @Override
+        public String toString() {
+            return "Vertice " + info;
+        }
         
     }
+
     
     class Aresta {
         Vertice origem;
@@ -205,7 +229,6 @@ public class Grafo <T>{
             this.peso = peso;
         }
 
-   
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
@@ -226,6 +249,14 @@ public class Grafo <T>{
             }
             return Objects.equals(this.destino, other.destino);
         }
+
+        @Override
+        public String toString() {
+            return "Aresta: " + "Origem  = " + origem.info 
+                    + "\n        Destino = " + destino.info 
+                    + "\n        peso    = " + peso;
+        }
+        
     }
 
     
