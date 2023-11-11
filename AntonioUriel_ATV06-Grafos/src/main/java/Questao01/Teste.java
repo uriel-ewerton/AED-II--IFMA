@@ -1,6 +1,9 @@
 
 package Questao01;
 
+import Questao01.Grafo.Aresta;
+import Questao01.Grafo.Vertice;
+
 /**
  *
  * @author Uriel ewerton

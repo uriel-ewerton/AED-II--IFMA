@@ -27,6 +27,12 @@ public class Grafo <T>{
     }
     
     public Vertice adicionarVertice(T info) {
+        for (Vertice vertice : vertices) {
+            if (vertice.info.equals(info)) {
+                // Um vértice com a mesma informação já existe, então retornamos esse vértice
+                return vertice;
+            }
+        }
         Vertice vertice = new Vertice(info);
         if(vertices.buscarInterno(vertice) == null){
             vertices.inserir(vertice);
@@ -42,7 +48,7 @@ public class Grafo <T>{
             if(arestas.buscarInterno(aresta) == null){
                 //caso não direcionado, adiciona aresta e sua duplicata inversa
                 if(!grafoDirecionado){
-                    if(!origem.equals(destino)){
+                    if(!aresta.origem.equals(aresta.destino)){
                         Aresta arestaInversa = new Aresta(destino, origem);
                         destino.adicionarAdjacente(arestaInversa);
                         arestas.inserir(arestaInversa);
@@ -183,9 +189,8 @@ public class Grafo <T>{
         }
         System.out.print(res);
         }
-    }
 
-    class Vertice<T> { 
+    public class Vertice<T> { 
         T info;
         Lista<Aresta> adjacentes;
         Vertice(T info) {
@@ -217,9 +222,7 @@ public class Grafo <T>{
         }
         
     }
-
-    
-    class Aresta {
+    public class Aresta {
         Vertice origem;
         Vertice destino;
         int peso;
@@ -264,6 +267,9 @@ public class Grafo <T>{
         }
         
     }
+}
+
+    
 
     
 
