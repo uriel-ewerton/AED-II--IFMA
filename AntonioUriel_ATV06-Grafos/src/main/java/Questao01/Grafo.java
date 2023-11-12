@@ -29,16 +29,14 @@ public class Grafo <T>{
     public Vertice adicionarVertice(T info) {
         for (Vertice vertice : vertices) {
             if (vertice.info.equals(info)) {
-                // Um vértice com a mesma informação já existe, então retornamos esse vértice
+                // Um vértice com a mesma informação já existe, 
+                // então retornamos esse vértice
                 return vertice;
             }
         }
         Vertice vertice = new Vertice(info);
-        if(vertices.buscarInterno(vertice) == null){
-            vertices.inserir(vertice);
-            return vertice;
-        }else
-            return null;
+        vertices.inserir(vertice);
+        return vertice;
     }
     
     public Aresta adicionarAresta(Vertice origem, Vertice destino) {
@@ -82,16 +80,21 @@ public class Grafo <T>{
                 if(!grafoDirecionado){
                     if(!origem.equals(destino)){
                         Aresta arestaInversa = new Aresta(destino, origem, peso);
+                        origem.grau--;
+                        destino.grau++;
                         destino.adicionarAdjacente(arestaInversa);
                         arestas.inserir(arestaInversa);
                     }
                     origem.adicionarAdjacente(aresta);
+                    origem.grau += 2;
                     arestas.inserir(aresta);
                     return aresta;
                 }
                 Aresta arestaInversa = new Aresta(destino, origem, peso);
                 //caso direcionado, adiciona aresta, se não houver inversa
                 if(arestas.buscarInterno(arestaInversa) == null){
+                    origem.grau++;
+                    destino.grau++;
                     origem.adicionarAdjacente(aresta);
                     arestas.inserir(aresta);
                     return aresta;
@@ -141,12 +144,16 @@ public class Grafo <T>{
             if(xy.origem.info.equals(info1) && xy.destino.info.equals(info2)){
                 arestas.remover(xy);
                 xy.origem.adjacentes.remover(xy);
+                xy.origem.grau--;
                 xy.destino.adjacentes.remover(xy);
+                xy.destino.grau--;
             }else if(!grafoDirecionado){  
                 if(xy.origem.info.equals(info2) && xy.destino.info.equals(info1)){
                     arestas.remover(xy);
                     xy.origem.adjacentes.remover(xy);
+                    xy.origem.grau--;
                     xy.destino.adjacentes.remover(xy);
+                    xy.destino.grau--;
                 }
             }
         }
@@ -173,6 +180,7 @@ public class Grafo <T>{
     public Lista<Aresta> obterAdjascentes(Vertice v){
         return v.adjacentes;
     }
+    
     public void imprimir() {
         String res = "";
         boolean virgula;
@@ -190,11 +198,22 @@ public class Grafo <T>{
         System.out.print(res);
         }
 
+    public Lista<Vertice> getVertices() {
+        return vertices;
+    }
+
+    public Lista<Aresta> getArestas() {
+        return arestas;
+    }
+
     public class Vertice<T> { 
         T info;
+        int grau;
         Lista<Aresta> adjacentes;
+        
         Vertice(T info) {
             this.info = info;
+            this.grau = 0;
             this.adjacentes = new Lista<>();
         }
         void adicionarAdjacente(Aresta e) {
