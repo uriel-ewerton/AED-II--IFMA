@@ -33,7 +33,7 @@ public class Run{
     }
     public static boolean temCiclo(Grafo grafo){
         Fila fila = new Fila();
-        
+        return true;
     }
 }
 /* Uma abordagem seria: 
