@@ -38,27 +38,16 @@ public class Run{
             System.out.println("Erro de leitura: " + e);
         }
         grafo.imprimir();
+        
         Grafo.BellmanFord bellmanFord = grafo.new BellmanFord(grafo, origem, destino);
-        Lista<Vertice> caminho = bellmanFord.encontrarCaminho();
-        caminho.imprimir();
-        /*Grafo grafo = new Grafo(true, true);
-        Grafo.Vertice origem = grafo.adicionarVertice("0");
-        Grafo.Vertice destino = grafo.adicionarVertice("4");
-        Grafo.Vertice a = grafo.adicionarVertice("1");
-        Grafo.Vertice b = grafo.adicionarVertice("2");
-        Grafo.Vertice c = grafo.adicionarVertice("3");
-        grafo.adicionarAresta(origem, a, 1);
-        grafo.adicionarAresta(origem, b, 4);
-        grafo.adicionarAresta(a, b, 2);
-        grafo.adicionarAresta(a, c, 5);
-        grafo.adicionarAresta(b, destino, 1);
-        grafo.adicionarAresta(c, destino, 3);
-
-        Grafo.BellmanFord bellmanFord = grafo.new BellmanFord(grafo, origem, destino);
-        Lista<Vertice> caminho = bellmanFord.encontrarCaminho();
+        Grafo.BellmanFord.ResultadoBellmanFord resultado = bellmanFord.encontrarCaminho();
+        
+        System.out.println("\nCaminho mais curto: ");
+        Lista<Vertice> caminho = resultado.getCaminho();
         caminho.imprimir();
 
-        */
+        double distanciaTotal = resultado.getDistanciaTotal();
+        System.out.println("Distância Total: " + distanciaTotal);
         
     }
     

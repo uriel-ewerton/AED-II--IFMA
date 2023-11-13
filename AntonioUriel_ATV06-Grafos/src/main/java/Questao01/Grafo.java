@@ -585,7 +585,7 @@ public class Grafo <T>{
             this.antecessor = new Vertice[grafo.vertices.getTamanho()];
         }
 
-        public Lista<Vertice> encontrarCaminho() {
+        public ResultadoBellmanFord encontrarCaminho() {
             for (int i = 0; i < grafo.vertices.getTamanho(); i++) {
                 distancias[i] = Double.POSITIVE_INFINITY;
             }
@@ -618,7 +618,10 @@ public class Grafo <T>{
             for (Vertice v = destino; v != null; v = antecessor[indiceDoVertice(v)]) {
                 caminho.inserirNoInicio(v);
             }
-            return caminho;
+            double distanciaTotal = distancias[indiceDoVertice(destino)];
+
+        
+            return new ResultadoBellmanFord(caminho, distanciaTotal);
         }
         
         private int indiceDoVertice(Vertice<T> vertice) {
@@ -631,6 +634,23 @@ public class Grafo <T>{
                 indice++;
             }
             throw new RuntimeException("Vértice não encontrado no grafo");
+        }
+        public class ResultadoBellmanFord<T> {
+            private Lista<Vertice<T>> caminho;
+            private double distanciaTotal;
+
+            public ResultadoBellmanFord(Lista<Vertice<T>> caminho, double distanciaTotal) {
+                this.caminho = caminho;
+                this.distanciaTotal = distanciaTotal;
+            }
+
+            public Lista<Vertice<T>> getCaminho() {
+                return caminho;
+            }
+
+            public double getDistanciaTotal() {
+                return distanciaTotal;
+            }
         }
     }
 }
