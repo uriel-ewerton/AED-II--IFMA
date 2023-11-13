@@ -1,0 +1,8 @@
+Cidade B
+Cidade A
+Cidade A; Cidade B; 5
+Cidade B; Cidade E; 6
+Cidade C; Cidade A; 3
+Cidade D; Cidade C; 7
+Cidade E; Cidade D; 4
+Cidade E; Cidade A; 16

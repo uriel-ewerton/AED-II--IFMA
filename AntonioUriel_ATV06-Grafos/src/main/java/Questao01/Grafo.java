@@ -46,7 +46,6 @@ public class Grafo <T>{
      * 
      * @param origem
      * @param destino
-     * @param peso
      * @return 
      */
     public Aresta adicionarAresta(Vertice origem, Vertice destino) {
@@ -309,6 +308,89 @@ public class Grafo <T>{
             }
         }
     }
+    
+    public boolean temCiclo(Grafo grafo){
+        Fila<Vertice> fila = new Fila<>();
+        
+        if(!grafoDirecionado){
+            // Inicializar a fila com todos os vértices de grau 1
+            for (Object v : grafo.vertices) {
+                Vertice vertice = (Vertice) v;
+                if (vertice.grau == 1) {
+                    fila.inserir(vertice);
+                }
+            }
+
+            // Percorrer a fila
+            while (!fila.vazia()) {
+                Vertice vertice = fila.remover();
+
+                // Visitar os adjacentes do vértice corrente
+                for (Object a : vertice.adjacentes) {
+                    Aresta aresta = (Aresta) a;
+                    Vertice adjacente = aresta.destino.equals(vertice) ? aresta.origem : aresta.destino;
+                    adjacente.grau--;
+
+                    // Se um vértice ficar com grau 1, inseri-lo na fila
+                    if (adjacente.grau == 1) {
+                        fila.inserir(adjacente);
+                    }
+                }
+            }
+
+            // Se existirem vértices não visitados (ou seja, vértices com grau maior que 0),
+            // eles fazem parte de um ciclo
+            for (Object v : grafo.vertices) {
+                Vertice vertice = (Vertice) v;
+                if (vertice.grau > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        // Caso direcionado
+        // Inicializar a fila com todos os vértices de grau 1
+        for (Object v : grafo.vertices) {
+            Vertice vertice = (Vertice) v;
+            int grauEntrada = 0;
+            for (Object a : grafo.arestas) {
+                Aresta aresta = (Aresta) a;
+                if (aresta.destino.equals(vertice)) {
+                    grauEntrada++;
+                }
+            }
+            vertice.grau = grauEntrada; // Armazenar o grau de entrada no próprio vértice
+
+            if (grauEntrada == 0) {
+                fila.inserir(vertice);
+            }
+        }
+
+        int contador = 0;
+
+        while (!fila.vazia()) {
+            Vertice vertice = fila.remover();
+
+            // Visitar os vértices adjacentes
+            for (Object a : vertice.adjacentes) {
+                Aresta aresta = (Aresta) a;
+                Vertice adjacente = aresta.destino;
+                adjacente.grau--; // Decrementar o grau de entrada do vértice adjacente
+
+                // Se um vértice ficar com grau de entrada 0, inseri-lo na fila
+                if (adjacente.grau == 0) {
+                    fila.inserir(adjacente);
+                }
+            }
+
+            contador++;
+        }
+
+        // Se o contador é igual ao número de vértices, o grafo não contém um ciclo
+        return contador != grafo.vertices.getTamanho();
+    
+    }
+    
     public class Vertice<T> { 
         T info;
         int grau;
@@ -412,6 +494,144 @@ public class Grafo <T>{
                     + "\n        peso    = " + peso;
         }
         
+    }
+    public class Labirinto {
+        private Grafo grafo;
+        private Vertice entrada, saida;
+        private Lista<Vertice> caminho;
+
+        public Labirinto(char[][] matriz) {
+            grafo = new Grafo(true, false);
+            Vertice[][] vertices = new Vertice[matriz.length][matriz[0].length];
+            for (int i = 0; i < matriz.length; i++) {
+                for (int j = 0; j < matriz[i].length; j++) {
+                    if (matriz[i][j] != 'X') {
+                        vertices[i][j] = grafo.adicionarVertice(String.valueOf(i * matriz[0].length + j));
+                        if (matriz[i][j] == 'E') {
+                            entrada = vertices[i][j];
+                        } else if (matriz[i][j] == 'S') {
+                            saida = vertices[i][j];
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < matriz.length; i++) {
+                for (int j = 0; j < matriz[i].length; j++) {
+                    if (matriz[i][j] != 'X') {
+                        if (i > 0 && matriz[i - 1][j] != 'X') {
+                            grafo.adicionarAresta(vertices[i][j], vertices[i - 1][j]);
+                        }
+                        if (j > 0 && matriz[i][j - 1] != 'X') {
+                            grafo.adicionarAresta(vertices[i][j], vertices[i][j - 1]);
+                        }
+                        if (i < matriz.length - 1 && matriz[i + 1][j] != 'X') {
+                            grafo.adicionarAresta(vertices[i][j], vertices[i + 1][j]);
+                        }
+                        if (j < matriz[i].length - 1 && matriz[i][j + 1] != 'X') {
+                            grafo.adicionarAresta(vertices[i][j], vertices[i][j + 1]);
+                        }
+                    }
+                }
+            }
+            caminho = new Lista<>();
+        }
+
+        public Lista<Vertice> encontrarCaminho() {
+            Fila<Vertice> fila = new Fila<>();
+            Lista<Vertice> visitados = new Lista<>();
+            Vertice[] antecessor = new Vertice[grafo.vertices.getTamanho()];
+
+            fila.inserir(entrada);
+            visitados.inserir(entrada);
+
+            while (!fila.vazia()) {
+                Vertice atual = fila.remover();
+                if (atual.equals(saida)) {
+                    Vertice passo = saida;
+                    while (passo != null) {
+                        caminho.inserirNoInicio(passo);
+                        passo = antecessor[Integer.parseInt((String) passo.info)];
+                    }
+                    return caminho;
+                }
+                for (Object a : atual.adjacentes) {
+                    Aresta aresta = (Aresta) a;
+                    Vertice adjacente = aresta.destino;
+                    if (!visitados.buscar(adjacente)) {
+                        fila.inserir(adjacente);
+                        visitados.inserir(adjacente);
+                        int indice = Integer.parseInt((String) adjacente.info);
+                        if (indice >= 0 && indice < antecessor.length) {
+                            antecessor[indice] = atual;
+                        }
+                    }
+                }
+            }
+            return null; // Não há caminho para a saída
+        }
+    }
+    public class BellmanFord {
+        private Grafo grafo;
+        private Vertice origem;
+        private Vertice destino;
+        private double[] distancias;
+        private Vertice[] antecessor;
+
+        public BellmanFord(Grafo grafo, Vertice origem, Vertice destino) {
+            this.grafo = grafo;
+            this.origem = origem;
+            this.destino = destino;
+            this.distancias = new double[grafo.vertices.getTamanho()];
+            this.antecessor = new Vertice[grafo.vertices.getTamanho()];
+        }
+
+        public Lista<Vertice> encontrarCaminho() {
+            for (int i = 0; i < grafo.vertices.getTamanho(); i++) {
+                distancias[i] = Double.POSITIVE_INFINITY;
+            }
+            distancias[indiceDoVertice(origem)] = 0;
+
+            for (int i = 1; i < grafo.vertices.getTamanho(); i++) {
+                for (Object a : grafo.arestas) {
+                    Aresta aresta = (Aresta) a;
+                    int u = indiceDoVertice(aresta.origem);
+                    int v = indiceDoVertice(aresta.destino);
+                    double peso = aresta.peso;
+                    if (distancias[u] + peso < distancias[v]) {
+                        distancias[v] = distancias[u] + peso;
+                        antecessor[v] = aresta.origem;
+                    }
+                }
+            }
+
+            for (Object a : grafo.arestas) {
+                Aresta aresta = (Aresta) a;
+                int u = indiceDoVertice(aresta.origem);
+                int v = indiceDoVertice(aresta.destino);
+                double peso = aresta.peso;
+                if (distancias[u] + peso < distancias[v]) {
+                    throw new RuntimeException("O grafo contém um ciclo de peso negativo");
+                }
+            }
+
+            Lista<Vertice> caminho = new Lista<>();
+            for (Vertice v = destino; v != null; v = antecessor[indiceDoVertice(v)]) {
+                caminho.inserirNoInicio(v);
+            }
+            return caminho;
+        }
+        
+        private int indiceDoVertice(Vertice<T> vertice) {
+            int indice = 0;
+            for (Object ver : grafo.getVertices()) {
+                Vertice<T> v = (Vertice<T>) ver;
+                if (v.equals(vertice)) {
+                    return indice;
+                }
+                indice++;
+            }
+            throw new RuntimeException("Vértice não encontrado no grafo");
+        }
     }
 }
 

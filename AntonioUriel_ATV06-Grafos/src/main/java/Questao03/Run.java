@@ -1,10 +1,11 @@
 
-package Questao02;
+package Questao03;
 
 import Questao01.Grafo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import util.Fila;
 
 /**
  *
@@ -12,7 +13,7 @@ import java.io.IOException;
  */
 public class Run{
     public static void main (String[] args){
-        Grafo grafo = new Grafo(false,false);
+        Grafo grafo = new Grafo(true,false);
         try(BufferedReader arquivo = new BufferedReader(new FileReader("src\\main\\java\\entrada\\dadosQ2eQ3.txt"))){
             String linha;
             while ((linha = arquivo.readLine()) != null){
@@ -27,7 +28,7 @@ public class Run{
         }
         grafo.imprimir();
         System.out.println(grafo.temCiclo(grafo) ? "O grafo contém um ciclo" : "O grafo não contém um ciclo");
-        //a função de verificação do ciclo está dentro da implementação do grafo
-        //no pacote Questao01
+        
     }
+    
 }

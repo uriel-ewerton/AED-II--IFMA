@@ -54,6 +54,19 @@ public class Lista<T> implements Iterable <T>{
         this.tamanho++;
     } 
     
+    public void inserirNoInicio(T elemento) {
+        NoDuplo<T> nodo = new NoDuplo<>(elemento);
+        if (this.primeiro == null && this.ultimo == null) {
+            this.primeiro = nodo;
+            this.ultimo = nodo;
+        } else {
+            nodo.setProximo(this.primeiro);
+            this.primeiro.setAnterior(nodo);
+            this.primeiro = nodo;
+        }
+        this.tamanho++;
+    }
+    
     public void remover (T elemento){
         
         if (this.tamanho == 1){
@@ -80,7 +93,7 @@ public class Lista<T> implements Iterable <T>{
             }
         }
     }
-    
+    /*
     public String buscar (T elemento){
         NoDuplo<T> resposta = buscarInterno(elemento);
         if (resposta == null){
@@ -88,6 +101,11 @@ public class Lista<T> implements Iterable <T>{
         }
         else
             return resposta.getElemento().toString();
+    }
+    */
+    public boolean buscar (T elemento){
+        NoDuplo<T> resposta = buscarInterno(elemento);
+        return resposta != null;
     }
     
     public NoDuplo<T> buscarInterno (T elemento){
