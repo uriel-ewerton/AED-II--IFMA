@@ -5,7 +5,6 @@ import Questao01.Grafo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import util.Fila;
 
 /**
  *
@@ -28,7 +27,8 @@ public class Run{
         }
         grafo.imprimir();
         System.out.println(grafo.temCiclo(grafo) ? "O grafo contém um ciclo" : "O grafo não contém um ciclo");
-        
+        //A implementação está dentro do método temCiclo, dentro da implementação
+        //do grafo.
     }
     
 }

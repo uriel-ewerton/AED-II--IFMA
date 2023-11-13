@@ -8,7 +8,7 @@ import java.util.Objects;
  * @author Uriel Ewerton
  * @param <T> Tipo Genérico
  */
-public class Grafo <T>{
+public class Grafo <T,I>{
     /**
      * grafoDirecionado e grafoPonderado são booleanos que regulam o tipo de 
      * grafo que será montado. Verdadeiro para a ativação da característica.
@@ -38,6 +38,13 @@ public class Grafo <T>{
         vertices.inserir(vertice);
         return vertice;
     }
+    
+    public Vertice adicionarVertice(T info, I id) {
+        Vertice novoVertice = new Vertice(info,id);
+        vertices.inserir(novoVertice);
+        return novoVertice;
+    }
+
     /**
      * 
      * 
@@ -209,7 +216,7 @@ public class Grafo <T>{
      * Imprime todos os vértices e seus respectivos adjacentes
      */
     void verticeEAdj(){
-        for(Vertice<T> v : vertices){
+        for(Vertice<T,I> v : vertices){
                 System.out.println("Vértice: " + v.info);
                 for(Aresta a : v.adjacentes){
                     System.out.println("Aresta: ");
@@ -280,7 +287,7 @@ public class Grafo <T>{
     
     private void atualizarGraus() {
         if(!grafoDirecionado){
-            for (Vertice<T> vertice : vertices) {
+            for (Vertice<T,I> vertice : vertices) {
                 int grauAtualizado = 0;
                 for(Aresta aresta : vertice.adjacentes){
                     if(aresta.origem.equals(aresta.destino)){
@@ -291,7 +298,7 @@ public class Grafo <T>{
                 vertice.grau = grauAtualizado;
             }
         }else if(grafoDirecionado){
-            for (Vertice<T> vertice : vertices) {
+            for (Vertice<T,I> vertice : vertices) {
                 int grauEntrada = 0;
                 int grauSaida = 0;
 
@@ -315,10 +322,10 @@ public class Grafo <T>{
             }
         }
     }
-    private int indiceDoVertice(Vertice<T> vertice) {
+    private int indiceDoVertice(Vertice<T,I> vertice) {
         int indice = 0;
         for (Object ver : vertices) {
-            Vertice<T> v = (Vertice<T>) ver;
+            Vertice<T,I> v = (Vertice<T,I>) ver;
             if (v.equals(vertice)) {
                 return indice;
             }
@@ -326,10 +333,10 @@ public class Grafo <T>{
         }
         throw new RuntimeException("Vértice não encontrado no grafo");
     }
-    public Vertice<T> obterVerticePelaPosicao(int posicao) {
+    public Vertice<T,I> obterVerticePelaPosicao(int posicao) {
         int indice = 0;
         for (Object vertice : vertices) {
-            Vertice<T> v = (Vertice<T>) vertice;
+            Vertice<T,I> v = (Vertice<T,I>) vertice;
             if (indice == posicao) {
                 return v;
             }
@@ -419,8 +426,9 @@ public class Grafo <T>{
     
     }
     
-    public class Vertice<T> { 
+    public class Vertice<T,I> { 
         T info;
+        I id;
         int grau;
         Lista<Aresta> adjacentes;
         
@@ -429,6 +437,14 @@ public class Grafo <T>{
             this.grau = 0;
             this.adjacentes = new Lista<>();
         }
+
+        public Vertice(T info, I id) {
+            this.info = info;
+            this.id = id;
+            this.grau = 0;
+            this.adjacentes = new Lista<>();
+        }
+        
         void adicionarAdjacente(Aresta a) {
             adjacentes.inserir(a);
         }
@@ -443,6 +459,10 @@ public class Grafo <T>{
 
         public T getInfo() {
             return info;
+        }
+
+        public I getId() {
+            return id;
         }
         
         public Lista<Aresta> getAdjacentes() {
@@ -460,7 +480,7 @@ public class Grafo <T>{
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final Vertice<?> other = (Vertice<?>) obj;
+            final Vertice<?,?> other = (Vertice<?,?>) obj;
             return Objects.equals(this.info, other.info);
         }
 
@@ -584,15 +604,15 @@ public class Grafo <T>{
         
         
         public class ResultadoBellmanFord<T> {
-            private Lista<Vertice<T>> caminho;
+            private Lista<Vertice<T,I>> caminho;
             private double distanciaTotal;
 
-            public ResultadoBellmanFord(Lista<Vertice<T>> caminho, double distanciaTotal) {
+            public ResultadoBellmanFord(Lista<Vertice<T,I>> caminho, double distanciaTotal) {
                 this.caminho = caminho;
                 this.distanciaTotal = distanciaTotal;
             }
 
-            public Lista<Vertice<T>> getCaminho() {
+            public Lista<Vertice<T,I>> getCaminho() {
                 return caminho;
             }
 
@@ -603,45 +623,44 @@ public class Grafo <T>{
     }
     
     public class BuscaEmProfundidade {
-        private Grafo<T> grafo;
+        private Grafo<T,I> grafo;
         private boolean[] visitado;
-        private Lista<Vertice<T>> caminho;
+        private Lista<Vertice<T,I>> caminho;
 
-        public BuscaEmProfundidade(Grafo<T> grafo) {
+        public BuscaEmProfundidade(Grafo<T,I> grafo) {
             this.grafo = grafo;
             this.visitado = new boolean[grafo.getVertices().getTamanho()];
             this.caminho = new Lista<>();
         }
 
-        public Lista<Vertice<T>> buscarCaminho(Vertice<T> inicio, Vertice<T> destino) {
+        public Lista<Vertice<T,I>> buscarCaminho(Vertice<T,I> inicio, Vertice<T,I> destino) {
             limparVisitados();
             caminho = new Lista<>();
             dfs(inicio, destino);
             return caminho;
         }
 
-        private void dfs(Vertice<T> atual, Vertice<T> destino) {
+        private boolean dfs(Vertice<T,I> atual, Vertice<T,I> destino) {
             visitado[grafo.indiceDoVertice(atual)] = true;
             caminho.inserir(atual);
 
-            if (atual.equals(destino)) {
-                // Encontramos o destino, encerramos a busca
-                return;
+            if (atual.getId().equals(destino.getId())) {
+                System.out.println("Destino encontrado!");
+                return true;
             }
 
             for (Aresta aresta : atual.getAdjacentes()) {
-                Vertice<T> vizinho = aresta.getDestino();
+                Vertice<T,I> vizinho = aresta.getDestino();
                 if (!visitado[grafo.indiceDoVertice(vizinho)]) {
-                    dfs(vizinho, destino);
-                    if (caminho.buscar(destino)) {
-                        // Já encontramos o destino, encerramos a busca
-                        return;
+                    if (dfs(vizinho, destino)) {
+                        return true;
                     }
                 }
             }
 
             // Se chegamos aqui, não há mais caminhos a seguir a partir deste ponto
             caminho.removerUltimo();
+            return false;
         }
 
         private void limparVisitados() {

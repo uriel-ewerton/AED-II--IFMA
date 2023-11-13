@@ -19,18 +19,20 @@ public class Run{
         Lista<Vertice> caminho = labirinto.encontrarCaminho();
 
         if (caminho != null) {
-            System.out.println("SAÍDA: " + caminho);
+            System.out.println("SAÍDA: ");
+            caminho.imprimir();
         }
+        
     }
     
     public static class Labirinto {
 
-        private Grafo<Character> grafo;
+        private Grafo<Integer, Character> grafo;
 
         public Labirinto(String arquivo) {
             grafo = new Grafo<>(false, false);
             lerLabirinto(arquivo);
-            grafo.imprimir();  // Apenas para verificar se o grafo foi construído corretamente
+            //grafo.imprimir();  // Apenas para verificar se o grafo foi construído corretamente
         }
 
         private void lerLabirinto(String arquivo) {
@@ -41,33 +43,37 @@ public class Run{
                 String linha;
                 while ((linha = reader.readLine()) != null) {
                     colunas = linha.length();
-                    for (char c : linha.toCharArray()) {
-                        grafo.adicionarVertice(c);
+                    for (int j = 0; j < colunas; j++) {
+                        char c = linha.charAt(j);
+                        grafo.adicionarVertice((linhas * colunas) + j, c);
+
                     }
                     linhas++;
                 }
-                grafo.getVertices().imprimir();
+
                 // Adiciona arestas entre vértices adjacentes
                 for (int i = 0; i < linhas; i++) {
                     for (int j = 0; j < colunas; j++) {
                         int indiceAtual = i * colunas + j;
 
-                        // Verifica se o vértice é uma passagem livre (A) para adicionar arestas
-                        if (grafo.obterVerticePelaPosicao(indiceAtual).getInfo() == 'A') {
+                        char id = grafo.obterVerticePelaPosicao(indiceAtual).getId();
+                        if (id == 'A' || id == 'E' || id == 'S') {
                             // Adiciona aresta para a direita
-                            if (j < colunas - 1 && grafo.obterVerticePelaPosicao(indiceAtual + 1).getInfo() == 'A') {
+                            if (j < colunas - 1 && (grafo.obterVerticePelaPosicao(indiceAtual + 1).getId() == 'A' || grafo.obterVerticePelaPosicao(indiceAtual + 1).getId() == 'S')) {
                                 grafo.adicionarAresta(grafo.obterVerticePelaPosicao(indiceAtual), grafo.obterVerticePelaPosicao(indiceAtual + 1));
                             }
                             // Adiciona aresta para baixo
-                            if (i < linhas - 1 && grafo.obterVerticePelaPosicao(indiceAtual + colunas).getInfo() == 'A') {
+                            if (i < linhas - 1 && (grafo.obterVerticePelaPosicao(indiceAtual + colunas).getId() == 'A' || grafo.obterVerticePelaPosicao(indiceAtual + colunas).getId() == 'S')) {
                                 grafo.adicionarAresta(grafo.obterVerticePelaPosicao(indiceAtual), grafo.obterVerticePelaPosicao(indiceAtual + colunas));
                             }
-                        }
+}
                     }
                 }
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+
 
         public Lista<Vertice> encontrarCaminho() {
             Vertice entrada = null;
@@ -75,9 +81,9 @@ public class Run{
 
             // Encontrar vértice de entrada e de saída
             for (Vertice vertice : grafo.getVertices()) {
-                if (vertice.getInfo().equals('E')) {
+                if (vertice.getId().equals('E')) {
                     entrada = vertice;
-                } else if (vertice.getInfo().equals('S')) {
+                } else if (vertice.getId().equals('S')) {
                     saida = vertice;
                 }
             }
