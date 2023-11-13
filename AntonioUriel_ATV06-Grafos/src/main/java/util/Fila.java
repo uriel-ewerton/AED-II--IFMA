@@ -40,6 +40,10 @@ public class Fila<T> {
         this.tamanho = tamanho;
     }
     
+    public boolean vazia(){
+        return tamanho <= 0;
+    }
+    
     // Elemento é adicionado ao final da fila como ultimo.
     
     public void inserir (T elemento){
@@ -123,4 +127,3 @@ public class Fila<T> {
         }
     }
 }
-

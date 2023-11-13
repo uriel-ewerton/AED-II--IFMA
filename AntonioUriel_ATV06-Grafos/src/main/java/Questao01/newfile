@@ -1,227 +1,20 @@
-package Questao01;
-import java.util.Objects;
-public class Grafo <T>{
-    private final Lista<Vertice> vertices;
-    private final Lista<Aresta> arestas;
-    private final boolean grafoDirecionado;
-    private final boolean grafoPonderado;
-    public Grafo(boolean direcionadoOuNao, boolean ponderadoOuNao) {
-        vertices = new Lista<>();
-        arestas = new Lista<>();
-        this.grafoDirecionado = direcionadoOuNao;
-        this.grafoPonderado = ponderadoOuNao;
-    }
-    public Vertice adicionarVertice(T info) {
-        for (Vertice vertice : vertices) {
-            if (vertice.info.equals(info)) {
-                return vertice;
-            }
-        }
-        Vertice vertice = new Vertice(info);
-        vertices.inserir(vertice);
-        return vertice;
-    }
-    public Aresta adicionarAresta(Vertice origem, Vertice destino) {
-        if(!grafoPonderado){
-            Aresta aresta = new Aresta(origem, destino);
-            if(arestas.buscarInterno(aresta) == null){
-                if(!grafoDirecionado){
-                    if(!aresta.origem.equals(aresta.destino)){
-                        Aresta arestaInversa = new Aresta(destino, origem);
-                        origem.grau--;
-                        destino.grau++;
-                        destino.adicionarAdjacente(arestaInversa);
-                        arestas.inserir(arestaInversa);
-                    }
-                    origem.adicionarAdjacente(aresta);
-                    origem.grau += 2;
-                    arestas.inserir(aresta);
-                    return aresta;
-                }
-                Aresta arestaInversa = new Aresta(destino, origem);
-                if(arestas.buscarInterno(arestaInversa) == null){
-                    origem.grau++;
-                    destino.grau++;
-                    origem.adicionarAdjacente(aresta);
-                    arestas.inserir(aresta);
-                    return aresta;
-                }
-                System.out.println("Aresta já existe no caminho inverso: " 
-                        + origem.info + " " + destino.info);
-                return null;
-            }
-            System.out.println("Aresta já existe: " + origem.info + " " + destino.info);
-            return null;
-        }
-        return null;
-    }
-    public Aresta adicionarAresta(Vertice origem, Vertice destino, int peso) {
-        if(grafoPonderado){
-            Aresta aresta = new Aresta(origem, destino,peso);
-            if(arestas.buscarInterno(aresta) == null){
-                if(!grafoDirecionado){
-                    if(!origem.equals(destino)){
-                        Aresta arestaInversa = new Aresta(destino, origem, peso);
-                        origem.grau--;
-                        destino.grau++;
-                        destino.adicionarAdjacente(arestaInversa);
-                        arestas.inserir(arestaInversa);
-                    }
-                    origem.adicionarAdjacente(aresta);
-                    origem.grau += 2;
-                    arestas.inserir(aresta);
-                    return aresta;
-                }
-                Aresta arestaInversa = new Aresta(destino, origem, peso);
-                if(arestas.buscarInterno(arestaInversa) == null){
-                    origem.grau++;
-                    destino.grau++;
-                    origem.adicionarAdjacente(aresta);
-                    arestas.inserir(aresta);
-                    return aresta;
-                }
-                System.out.println("Aresta já existe: " + origem.info + " " + destino.info);
-                return null;
-            }
-            System.out.println("Aresta já existe: " + origem.info + " " + destino.info);
-            return null;
-        }
-        return null;
-    }
-    public void imprimir() {
-        String res = "";
-        boolean virgula;
-        for (Vertice origem : vertices) {
-            res += origem.info + " >>> ";
-            virgula = false;
-            for (Object x : origem.adjacentes){
-                Aresta destino = (Aresta) x;
-                Vertice v = destino.destino;
-                res += ( virgula ? ", ": "") + v.info ;
-                virgula = true;
-            }
-            res += "\n";
-        }
-        System.out.print(res);
-        }
-    private void atualizarGraus() {
-        for (Vertice<T> vertice : vertices) {
-            int grauAtualizado = 0;
-            for(Aresta aresta : vertice.adjacentes){
-                if(aresta.origem.equals(aresta.destino)){
-                    grauAtualizado += 2;
-                } else
-                    grauAtualizado ++;
-            }
-            if(grafoDirecionado){
-                for (Vertice<T> outroVertice : vertices) {
-                    for (Aresta aresta : outroVertice.adjacentes) {
-                        if (aresta.destino.equals(vertice)) {
-                            grauAtualizado++;
-                        }
-                    }
-                }
-            }
-            vertice.grau = grauAtualizado;
-        }
-    }
-    public class Vertice<T> { 
-        T info;
-        int grau;
-        Lista<Aresta> adjacentes;
-        Vertice(T info) {
-            this.info = info;
-            this.grau = 0;
-            this.adjacentes = new Lista<>();
-        }
-        void adicionarAdjacente(Aresta a) {
-            adjacentes.inserir(a);
-        }
-        void removerAdjacente(Aresta a){
-            adjacentes.remover(a);
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final Vertice<?> other = (Vertice<?>) obj;
-            return Objects.equals(this.info, other.info);
-        }
-        @Override
-        public String toString() {
-            return "Vertice " + info;
-        }
-    }
-    public class Aresta {
-        Vertice origem;
-        Vertice destino;
-        int peso;
-        Aresta(Vertice origem, Vertice destino){
-            this.origem = origem;
-            this.destino = destino;
-        }
-        Aresta(Vertice origem, Vertice destino, int peso) {
-            this.origem = origem;
-            this.destino = destino;
-            this.peso = peso;
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final Aresta other = (Aresta) obj;
-            if (this.peso != other.peso) {
-                return false;
-            }
-            if (!Objects.equals(this.origem, other.origem)) {
-                return false;
-            }
-            return Objects.equals(this.destino, other.destino);
-        }
-        @Override
-        public String toString() {
-            return "Aresta: " + "Origem  = " + origem.info 
-                    + "\n        Destino = " + destino.info 
-                    + "\n        peso    = " + peso;
-        }
-    }
-}
-
-
-package Questao01;
-
-import java.util.Iterator;
-public class Lista<T> implements Iterable <T>{
-    private NoDuplo<T> primeiro;
-    private NoDuplo<T> ultimo;
+public class Fila<T> {
+    private NoSimples<T> primeiro;
+    private NoSimples<T> ultimo;
     private int tamanho;
-    public Lista(){
+    public Fila() {
         this.tamanho = 0;
     }
-    public NoDuplo<T> getPrimeiro() {
+    public NoSimples<T> getPrimeiro() {
         return primeiro;
     }
-    public void setPrimeiro(NoDuplo<T> primeiro) {
+    public void setPrimeiro(NoSimples<T> primeiro) {
         this.primeiro = primeiro;
     }
-    public NoDuplo<T> getUltimo() {
+    public NoSimples<T> getUltimo() {
         return ultimo;
     }
-    public void setUltimo(NoDuplo<T> ultimo) {
+    public void setUltimo(NoSimples<T> ultimo) {
         this.ultimo = ultimo;
     }
     public int getTamanho() {
@@ -231,109 +24,60 @@ public class Lista<T> implements Iterable <T>{
         this.tamanho = tamanho;
     }
     public void inserir (T elemento){
-        NoDuplo<T> nodo = new NoDuplo<>(elemento);
-        if (this.primeiro == null && this.ultimo == null){
+        NoSimples<T> nodo = new NoSimples<>(elemento);
+        if (this.tamanho > 0){
+            ultimo.setProximo(nodo);
+            ultimo = nodo;
+        }
+        else{
             this.primeiro = nodo;
+            this.ultimo = nodo;
         }
-        else {
-            this.ultimo.setProximo(nodo);
-            nodo.setAnterior(this.ultimo);
-        }
-        this.ultimo = nodo;
         this.tamanho++;
     } 
-    public void remover (T elemento){
-        
+    public T remover (){
+        NoSimples<T> nodo = primeiro;
         if (this.tamanho == 1){
             this.primeiro = null;
             this.ultimo = null;
             this.tamanho--;
+            return nodo.getElemento();
         }
-        else if (this.tamanho > 1) {
-            NoDuplo<T> aux = buscarInterno(elemento);
-            if(aux != null){
-                if (aux == primeiro){
-                    this.primeiro = aux.getProximo();
-                    aux.setProximo(null);
-                }
-                else if (aux == ultimo){
-                    this.ultimo = aux.getAnterior();
-                    this.ultimo.setProximo(null);
-                }
-                else {
-                    aux.getProximo().setAnterior(aux.getAnterior());
-                    aux.getAnterior().setProximo(aux.getProximo());
-                }
-                this.tamanho--;
-            }
-        }
+        else if (this.tamanho > 1){
+            this.primeiro = this.primeiro.getProximo();
+            this.tamanho--;
+            return nodo.getElemento();
+        } 
+        return null;
     }
     public String buscar (T elemento){
-        NoDuplo<T> resposta = buscarInterno(elemento);
-        if (resposta == null){
-            return null;
-        }
-        else
-            return resposta.getElemento().toString();
-    }
-    public NoDuplo<T> buscarInterno (T elemento){
-        NoDuplo<T> auxiliar1 = this.primeiro;
-        NoDuplo<T> auxiliar2 = this.ultimo;
-        while (auxiliar1 != null){
-            if (auxiliar1.getElemento().equals(elemento)){
-                return auxiliar1;
+        NoSimples<T> resposta = this.primeiro;
+        while (resposta != null){
+            if (resposta.getElemento().equals(elemento)){
+                return resposta.getElemento().toString();
             }
-            else if (auxiliar2.getElemento().equals(elemento)){
-                return auxiliar2;
-            }
-            auxiliar1 = auxiliar1.getProximo();
-            auxiliar2 = auxiliar2.getAnterior();
+            resposta = resposta.getProximo();
         }
         return null;
-    }   
+    }
     public void imprimir(){
-        NoDuplo<T> aux = this.primeiro;
-        
+        NoSimples<T> aux = this.primeiro;
         if(this.tamanho == 0){
-            System.out.println("Lista vazia.");
+            System.out.println("Fila vazia.");
         }
         else {
             while(aux != null){
                 System.out.println(aux.getElemento().toString());
                 aux = aux.getProximo();
             }
+        System.out.println();
         }
     }
-    public void alterar(T elemento, T elementoNovo){
-        NoDuplo<T> aux = buscarInterno(elemento);
-        if (aux != null){
-            aux.setElemento(elementoNovo);
-        }
-    }
-    @Override
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
-            private NoDuplo<T> atual = primeiro;
-
-            @Override
-            public boolean hasNext() {
-                return atual != null;
-            }
-            @Override
-            public T next() {
-                T elemento = atual.getElemento();
-                atual = atual.getProximo();
-                return elemento;
-            }
-        };
-    }
-    public class NoDuplo<T> {
+    public class NoSimples <T>{
         private T elemento;
-        private NoDuplo<T> anterior;
-        private NoDuplo<T> proximo;
-        public NoDuplo (T elemento){
+        private NoSimples<T> proximo;
+        public NoSimples (T elemento){
             this.elemento = elemento;
-            this.anterior = null;
             this.proximo = null;
         }
         public T getElemento() {
@@ -342,16 +86,10 @@ public class Lista<T> implements Iterable <T>{
         public void setElemento(T elemento) {
             this.elemento = elemento;
         }
-        public NoDuplo<T> getAnterior() {
-            return anterior;
-        }
-        public void setAnterior(NoDuplo<T> anterior) {
-            this.anterior = anterior;
-        }
-        public NoDuplo<T> getProximo() {
+        public NoSimples<T> getProximo() {
             return proximo;
         }
-        public void setProximo(NoDuplo<T> proximo) {
+        public void setProximo(NoSimples<T> proximo) {
             this.proximo = proximo;
         }
     }

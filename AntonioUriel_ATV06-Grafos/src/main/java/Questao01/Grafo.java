@@ -322,6 +322,18 @@ public class Grafo <T>{
         void adicionarAdjacente(Aresta a) {
             adjacentes.inserir(a);
         }
+
+        public int getGrau() {
+            return grau;
+        }
+
+        public void setGrau(int grau) {
+            this.grau = grau;
+        }
+        
+        public Lista<Aresta> getAdjacentes() {
+            return adjacentes;
+        }
         
         @Override
         public boolean equals(Object obj) {
@@ -360,6 +372,18 @@ public class Grafo <T>{
             this.peso = peso;
         }
 
+        public Vertice getOrigem() {
+            return origem;
+        }
+
+        public Vertice getDestino() {
+            return destino;
+        }
+
+        public int getPeso() {
+            return peso;
+        }
+        
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {

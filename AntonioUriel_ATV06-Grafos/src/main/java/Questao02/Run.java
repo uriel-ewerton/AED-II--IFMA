@@ -1,7 +1,6 @@
 
 package Questao02;
 
-
 import Questao01.Grafo;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,7 +9,7 @@ import util.Fila;
 
 /**
  *
- * @author uriel
+ * @author Uriel Ewerton
  */
 public class Run{
     public static void main (String[] args){
@@ -32,14 +31,42 @@ public class Run{
         
     }
     public static boolean temCiclo(Grafo grafo){
-        Fila fila = new Fila();
-        return true;
+        Fila<Grafo.Vertice> fila = new Fila<>();
+
+        // Inicializar a fila com todos os vértices de grau 1
+        for (Object v : grafo.getVertices()) {
+            Grafo.Vertice vertice = (Grafo.Vertice) v;
+            if (vertice.getGrau() == 1) {
+                fila.inserir(vertice);
+            }
+        }
+
+        // Percorrer a fila
+        while (!fila.vazia()) {
+            Grafo.Vertice vertice = fila.remover();
+
+            // Visitar os adjacentes do vértice corrente
+            for (Object a : vertice.getAdjacentes()) {
+                Grafo.Aresta aresta = (Grafo.Aresta) a;
+                Grafo.Vertice adjacente = aresta.getDestino().equals(vertice) ? aresta.getOrigem() : aresta.getDestino();
+                adjacente.setGrau(adjacente.getGrau()-1);
+
+                // Se um vértice ficar com grau 1, inseri-lo na fila
+                if (adjacente.getGrau() == 1) {
+                    fila.inserir(adjacente);
+                }
+            }
+        }
+
+        // Se existirem vértices não visitados (ou seja, vértices com grau maior que 0), eles fazem parte de um ciclo
+        for (Object v : grafo.getVertices()) {
+            Grafo.Vertice vertice = (Grafo.Vertice) v;
+            if (vertice.getGrau() > 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
+
 }
-/* Uma abordagem seria: 
-dada uma fila dinâmica, inicialmente com todos os vértices de grau 1. 
-Percorrer a fila de forma que sejam visitados os adjacentes do vértice corrente, 
-para cada um decrementar de 1 o seu grau. Sempre que um vértice ficar com grau
-1 deve ser inserido na fila. Após finalizar a fila, caso existam vértices não 
-visitados, eles fazem parte de um ciclo.
-*/
