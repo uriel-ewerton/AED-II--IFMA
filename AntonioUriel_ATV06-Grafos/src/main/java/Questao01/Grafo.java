@@ -204,7 +204,11 @@ public class Grafo <T>{
         }
         atualizarGraus();
     }
-    void verticeeadj(){
+    /**
+     * Auxiliar de debug. 
+     * Imprime todos os vértices e seus respectivos adjacentes
+     */
+    void verticeEAdj(){
         for(Vertice<T> v : vertices){
                 System.out.println("Vértice: " + v.info);
                 for(Aresta a : v.adjacentes){
@@ -216,7 +220,10 @@ public class Grafo <T>{
                 }
             }
     }
-    
+    /**
+     * Auxiliar de debug. 
+     * Imprime todas as arestas da lista de arestas
+     */
     void verarestas(){
         for(Aresta yz : arestas){
             System.out.println(yz.origem.info+" "+yz.destino.info);
@@ -308,7 +315,28 @@ public class Grafo <T>{
             }
         }
     }
-    
+    private int indiceDoVertice(Vertice<T> vertice) {
+        int indice = 0;
+        for (Object ver : vertices) {
+            Vertice<T> v = (Vertice<T>) ver;
+            if (v.equals(vertice)) {
+                return indice;
+            }
+            indice++;
+        }
+        throw new RuntimeException("Vértice não encontrado no grafo");
+    }
+    public Vertice<T> obterVerticePelaPosicao(int posicao) {
+        int indice = 0;
+        for (Object vertice : vertices) {
+            Vertice<T> v = (Vertice<T>) vertice;
+            if (indice == posicao) {
+                return v;
+            }
+            indice++;
+        }
+        throw new RuntimeException("Vértice não encontrado na posição especificada");
+    }
     public boolean temCiclo(Grafo grafo){
         Fila<Vertice> fila = new Fila<>();
         
@@ -412,6 +440,10 @@ public class Grafo <T>{
         public void setGrau(int grau) {
             this.grau = grau;
         }
+
+        public T getInfo() {
+            return info;
+        }
         
         public Lista<Aresta> getAdjacentes() {
             return adjacentes;
@@ -434,7 +466,7 @@ public class Grafo <T>{
 
         @Override
         public String toString() {
-            return "Vertice " + info;
+            return "" + info;
         }
         
     }
@@ -495,81 +527,7 @@ public class Grafo <T>{
         }
         
     }
-    public class Labirinto {
-        private Grafo grafo;
-        private Vertice entrada, saida;
-        private Lista<Vertice> caminho;
-
-        public Labirinto(char[][] matriz) {
-            grafo = new Grafo(true, false);
-            Vertice[][] vertices = new Vertice[matriz.length][matriz[0].length];
-            for (int i = 0; i < matriz.length; i++) {
-                for (int j = 0; j < matriz[i].length; j++) {
-                    if (matriz[i][j] != 'X') {
-                        vertices[i][j] = grafo.adicionarVertice(String.valueOf(i * matriz[0].length + j));
-                        if (matriz[i][j] == 'E') {
-                            entrada = vertices[i][j];
-                        } else if (matriz[i][j] == 'S') {
-                            saida = vertices[i][j];
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < matriz.length; i++) {
-                for (int j = 0; j < matriz[i].length; j++) {
-                    if (matriz[i][j] != 'X') {
-                        if (i > 0 && matriz[i - 1][j] != 'X') {
-                            grafo.adicionarAresta(vertices[i][j], vertices[i - 1][j]);
-                        }
-                        if (j > 0 && matriz[i][j - 1] != 'X') {
-                            grafo.adicionarAresta(vertices[i][j], vertices[i][j - 1]);
-                        }
-                        if (i < matriz.length - 1 && matriz[i + 1][j] != 'X') {
-                            grafo.adicionarAresta(vertices[i][j], vertices[i + 1][j]);
-                        }
-                        if (j < matriz[i].length - 1 && matriz[i][j + 1] != 'X') {
-                            grafo.adicionarAresta(vertices[i][j], vertices[i][j + 1]);
-                        }
-                    }
-                }
-            }
-            caminho = new Lista<>();
-        }
-
-        public Lista<Vertice> encontrarCaminho() {
-            Fila<Vertice> fila = new Fila<>();
-            Lista<Vertice> visitados = new Lista<>();
-            Vertice[] antecessor = new Vertice[grafo.vertices.getTamanho()];
-
-            fila.inserir(entrada);
-            visitados.inserir(entrada);
-
-            while (!fila.vazia()) {
-                Vertice atual = fila.remover();
-                if (atual.equals(saida)) {
-                    Vertice passo = saida;
-                    while (passo != null) {
-                        caminho.inserirNoInicio(passo);
-                        passo = antecessor[Integer.parseInt((String) passo.info)];
-                    }
-                    return caminho;
-                }
-                for (Object a : atual.adjacentes) {
-                    Aresta aresta = (Aresta) a;
-                    Vertice adjacente = aresta.destino;
-                    if (!visitados.buscar(adjacente)) {
-                        fila.inserir(adjacente);
-                        visitados.inserir(adjacente);
-                        int indice = Integer.parseInt((String) adjacente.info);
-                        if (indice >= 0 && indice < antecessor.length) {
-                            antecessor[indice] = atual;
-                        }
-                    }
-                }
-            }
-            return null; // Não há caminho para a saída
-        }
-    }
+    
     public class BellmanFord {
         private Grafo grafo;
         private Vertice origem;
@@ -620,21 +578,11 @@ public class Grafo <T>{
             }
             double distanciaTotal = distancias[indiceDoVertice(destino)];
 
-        
             return new ResultadoBellmanFord(caminho, distanciaTotal);
         }
         
-        private int indiceDoVertice(Vertice<T> vertice) {
-            int indice = 0;
-            for (Object ver : grafo.getVertices()) {
-                Vertice<T> v = (Vertice<T>) ver;
-                if (v.equals(vertice)) {
-                    return indice;
-                }
-                indice++;
-            }
-            throw new RuntimeException("Vértice não encontrado no grafo");
-        }
+        
+        
         public class ResultadoBellmanFord<T> {
             private Lista<Vertice<T>> caminho;
             private double distanciaTotal;
@@ -653,6 +601,56 @@ public class Grafo <T>{
             }
         }
     }
+    
+    public class BuscaEmProfundidade {
+        private Grafo<T> grafo;
+        private boolean[] visitado;
+        private Lista<Vertice<T>> caminho;
+
+        public BuscaEmProfundidade(Grafo<T> grafo) {
+            this.grafo = grafo;
+            this.visitado = new boolean[grafo.getVertices().getTamanho()];
+            this.caminho = new Lista<>();
+        }
+
+        public Lista<Vertice<T>> buscarCaminho(Vertice<T> inicio, Vertice<T> destino) {
+            limparVisitados();
+            caminho = new Lista<>();
+            dfs(inicio, destino);
+            return caminho;
+        }
+
+        private void dfs(Vertice<T> atual, Vertice<T> destino) {
+            visitado[grafo.indiceDoVertice(atual)] = true;
+            caminho.inserir(atual);
+
+            if (atual.equals(destino)) {
+                // Encontramos o destino, encerramos a busca
+                return;
+            }
+
+            for (Aresta aresta : atual.getAdjacentes()) {
+                Vertice<T> vizinho = aresta.getDestino();
+                if (!visitado[grafo.indiceDoVertice(vizinho)]) {
+                    dfs(vizinho, destino);
+                    if (caminho.buscar(destino)) {
+                        // Já encontramos o destino, encerramos a busca
+                        return;
+                    }
+                }
+            }
+
+            // Se chegamos aqui, não há mais caminhos a seguir a partir deste ponto
+            caminho.removerUltimo();
+        }
+
+        private void limparVisitados() {
+            for (int i = 0; i < visitado.length; i++) {
+                visitado[i] = false;
+            }
+        }
+    }
+
 }
 
     

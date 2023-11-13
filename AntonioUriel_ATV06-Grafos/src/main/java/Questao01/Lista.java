@@ -93,6 +93,18 @@ public class Lista<T> implements Iterable <T>{
             }
         }
     }
+    public void removerUltimo() {
+        if (this.tamanho == 1) {
+            this.primeiro = null;
+            this.ultimo = null;
+            this.tamanho--;
+        } else if (this.tamanho > 1) {
+            NoDuplo<T> penultimo = this.ultimo.getAnterior();
+            penultimo.setProximo(null);
+            this.ultimo = penultimo;
+            this.tamanho--;
+        }
+    }
     /*
     public String buscar (T elemento){
         NoDuplo<T> resposta = buscarInterno(elemento);

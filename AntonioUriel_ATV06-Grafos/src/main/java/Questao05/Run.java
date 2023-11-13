@@ -37,17 +37,22 @@ public class Run{
         } catch (IOException e) {
             System.out.println("Erro de leitura: " + e);
         }
+        
+        System.out.println("Mapa da cidade:");
         grafo.imprimir();
         
         Grafo.BellmanFord bellmanFord = grafo.new BellmanFord(grafo, origem, destino);
         Grafo.BellmanFord.ResultadoBellmanFord resultado = bellmanFord.encontrarCaminho();
         
-        System.out.println("\nCaminho mais curto: ");
+        System.out.println("\nCaminho mais curto entre " + 
+                grafo.pesquisarVertice(origem) + " e " +
+                grafo.pesquisarVertice(destino));
+        
         Lista<Vertice> caminho = resultado.getCaminho();
         caminho.imprimir();
 
         double distanciaTotal = resultado.getDistanciaTotal();
-        System.out.println("Distância Total: " + distanciaTotal);
+        System.out.println("Distância Total: " + distanciaTotal + " anos luz.");
         
     }
     

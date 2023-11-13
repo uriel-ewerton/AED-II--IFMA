@@ -3,7 +3,6 @@ package Questao01;
 
 import Questao01.Grafo.Aresta;
 import Questao01.Grafo.Vertice;
-import Questao01.Grafo;
 /**
  *
  * @author Uriel ewerton
@@ -30,7 +29,7 @@ public class Teste {
         //grafo.removerVertice(b);
         System.out.println();
         grafo.verarestas();
-        grafo.verticeeadj();
+        grafo.verticeEAdj();
         System.out.println();
         grafo.imprimir();
     }
